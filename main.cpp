@@ -47,6 +47,8 @@ int main(void)
         printf("err = %d\n", err);
     printf("Insert 80 at HEAD\n");
     PrintList(&List);
+    
+    ListDump(&List);
 
     getchar();
     err = ListDeleteNode(&List, 3);
@@ -55,42 +57,40 @@ int main(void)
     printf("Delete 3\n");
     
     printf("HEAD = %d TAIL = %d\n", List.dummy->prev, List.dummy->next);
-    ListDump(&List);
+    getchar();
+    err = ListDeleteNode(&List, HEAD);
+    if (err)
+        printf("err = %d\n", err);
+    printf("Delete HEAD\n");
+    PrintList(&List);
 
-    //getchar();
-    //err = ListDeleteNode(&List, HEAD);
-    //if (err)
-    //    printf("err = %d\n", err);
-    //printf("Delete HEAD\n");
-    //PrintList(&List);
-//
-    //getchar();
-    //err = ListDeleteNode(&List, TAIL);
-    //if (err)
-    //    printf("err = %d\n", err);
-    //printf("Delete TAIL\n");
-    //PrintList(&List);
-//
-    //getchar();
-    //err = ListDeleteNode(&List, TAIL);
-    //if (err)
-    //    printf("err = %d\n", err);
-    //printf("Delete TAIL\n");
-    //PrintList(&List);
-//
-    //getchar();
-    //err = ListDeleteNode(&List, HEAD);
-    //if (err)
-    //    printf("err = %d\n", err);
-    //printf("Delete HEAD\n");
-    //PrintList(&List);
+    getchar();
+    err = ListDeleteNode(&List, TAIL);
+    if (err)
+        printf("err = %d\n", err);
+    printf("Delete TAIL\n");
+    PrintList(&List);
 
-    //getchar();
-    //err = ListInsertNode(&List, 4, HEAD);
-    //if (err)
-    //    printf("err = %d\n", err);
-    //printf("Insert 4 at HEAD\n");
-    //PrintList(&List);
+    getchar();
+    err = ListDeleteNode(&List, TAIL);
+    if (err)
+        printf("err = %d\n", err);
+    printf("Delete TAIL\n");
+    PrintList(&List);
+
+    getchar();
+    err = ListDeleteNode(&List, HEAD);
+    if (err)
+        printf("err = %d\n", err);
+    printf("Delete HEAD\n");
+    PrintList(&List);
+
+    getchar();
+    err = ListInsertNode(&List, 4, HEAD);
+    if (err)
+        printf("err = %d\n", err);
+    printf("Insert 4 at HEAD\n");
+    PrintList(&List);
 
     ListDtor(&List);
 
