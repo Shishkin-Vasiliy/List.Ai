@@ -297,63 +297,6 @@ void DescribeGraph(List_t *List, FILE *fp)
     fprintf(fp, "head:s -> node%d:n;\n", count);
 
     fprintf(fp, "}\n");
-    //fprintf(fp, "digraph {\n");
-//
-    //fprintf(fp, "bgcolor=\"#283f3f\";\n");
-    //fprintf(fp, "rankdir=LR;\n");
-    //fprintf(fp, "    splines=ortho;\n");
-//
-    //int curr = List->dummy->next;
-    //int count = 0;
-    //
-    //fprintf(fp, "node%d [shape=Mrecord; style = filled; fillcolor = \"#6A184D\"; color = \"#A5497E\"; fontcolor = \"#FFFFFF\";\n", count);
-    //fprintf(fp, "       label = \"   index = 0    | value = %X | {prev = %d | next = %d} \"; ]\n", List->dummy->val, List->dummy->prev, List->dummy->next);
-//
-    //if (List->dummy->prev != List->dummy->next && List->dummy->prev != 0)
-    //    count++;
-//
-    //if (count)
-    //{
-    //    for (; curr != List->dummy->prev; curr = List->data[curr].next, count++)
-    //    {
-    //        if (curr == List->dummy->next)
-    //        {
-    //            fprintf(fp, "node%d [shape=Mrecord; style = filled; fillcolor = \"#BA55D3\"; color = \"#FFFFFF\"; fontcolor = \"#FFFFFF\";\n", count);
-    //            fprintf(fp, "       label = \"   index = %d   | value = %d | {prev = %d | next = %d} \"; ]\n", curr, List->data[List->dummy->next].val, List->data[List->dummy->next].prev, List->data[List->dummy->next].next);
-    //        }
-    //        else 
-    //        {
-    //            fprintf(fp, "node%d [shape=Mrecord; style = filled; fillcolor = \"#006000\"; color = \"#FFFFFF\"; fontcolor = \"#FFFFFF\";\n", count);
-    //            fprintf(fp, "       label = \"   index = %d    | value = %d | {prev = %d | next = %d} \"; ]\n", curr, List->data[curr].val, List->data[curr].prev, List->data[curr].next);
-    //        }
-//
-    //        fprintf(fp, "edge [color = \"#FFFFFF\"; ]\n");
-    //        fprintf(fp, "node%d -> node%d [weight=100]\n", count - 1, count);
-    //        fprintf(fp, "node%d -> node%d [weight=1]\n", count, count - 1);
-    //    }
-//
-    //    fprintf(fp, "node%d [shape=Mrecord; style = filled; fillcolor = \"#000080\"; color = \"#FFFFFF\"; fontcolor = \"#FFFFFF\";\n", count);
-    //    fprintf(fp, "       label = \"   index = %d    | value = %d | {prev = %d | next = %d} \"; ]\n", curr, List->data[List->dummy->prev].val, List->data[List->dummy->prev].prev, List->data[List->dummy->prev].next);
-//
-    //    fprintf(fp, "node%d -> node%d [weight=100]\n", count - 1, count);
-    //    fprintf(fp, "node%d -> node%d [weight=1]\n", count, count - 1);
-    //}
-//
-    //fprintf(fp, "edge [color = \"#FFFFFF\"; ]\n");
-    //fprintf(fp, "node%d -> node%d [weight=1]\n", count, 0);
-    //fprintf(fp, "node%d -> node%d [weight=1]\n", 0, count);
-//
-    //
-    //fprintf(fp, "node [shape=circle; style=filled; fontcolor = \"#FFFFFF\"; width = 1.0; ]\n");
-    //fprintf(fp, "tail [label = \"tail\" fillcolor = \"#00F080F0\"; color = \"#FFFFFF\"; ]\n");
-    //fprintf(fp, "head [label = \"head\" fillcolor = \"#0000F0F0\"; color = \"#FFFFFF\"; ]\n");
-//
-    //fprintf(fp, "edge [color = \"#FFFFFF\"; ]\n");
-//
-    //fprintf(fp, "tail:s -> node1:n [constraint=false]\n");
-    //fprintf(fp, "head:s -> node%d:n [constraint=false]\n", count);
-//
-    //fprintf(fp, "}\n");
 }
 
 void ConstructHtm(List_t *List, FILE *fp, const char *png_path)
