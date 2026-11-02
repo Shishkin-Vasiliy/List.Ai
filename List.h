@@ -13,7 +13,7 @@ struct Node_t {
 struct List_t {
     Node_t *data;
     Node_t *dummy;
-    size_t size;
+    size_t capacity;
 };
 
 enum ListErr_t {
@@ -29,14 +29,18 @@ enum KeyNodes {
     TAIL = 1
 };
 
+int ListLogInit(List_t *List);
 void PrintList(List_t *List);
-ListErr_t ListCtor(List_t *List, size_t size);
+ListErr_t ListCtor(List_t *List, size_t capacity);
 int FindFree(List_t *List);
 int FindNode(List_t *List, int node);
 ListErr_t ListInsertNode(List_t *List, int val, int node);
 ListErr_t ListDeleteNode(List_t *List, int node);
 ListErr_t ListVerify(List_t *List);
 void ListDtor(List_t *List);
+void ListDump(List_t *List);
+void DescribeGraph(List_t *List, FILE *fp);
+void ConstructHtm(List_t *List, FILE *fp, const char *png_path);
 
 #define LIST_VERIFY(err, List)  \
 do                              \
