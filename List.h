@@ -12,8 +12,7 @@ struct Node_t {
 
 struct List_t {
     Node_t *data;
-    int tail; 
-    int head;
+    Node_t *dummy;
     size_t size;
 };
 
@@ -33,6 +32,7 @@ enum KeyNodes {
 void PrintList(List_t *List);
 ListErr_t ListCtor(List_t *List, size_t size);
 int FindFree(List_t *List);
+int FindNode(List_t *List, int node);
 ListErr_t ListInsertNode(List_t *List, int val, int node);
 ListErr_t ListDeleteNode(List_t *List, int node);
 ListErr_t ListVerify(List_t *List);
