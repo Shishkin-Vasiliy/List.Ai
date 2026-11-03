@@ -9,12 +9,13 @@ int main(void)
     ListErr_t err = ListCtor(&List, 8);
     printf("List successfully created\n");
 
-    int LogErr = ListLogInit(&List);
+    LogCtx_t LogCtx = {};
+    int LogErr = ListLogInit(&List, &LogCtx);
     if (!LogErr)
         printf("Logging started\n");
 
-    ListDump(&List);
-    
+    ListDump(&List, &LogCtx);
+
     getchar();
     err = ListInsertNode(&List, 50, 1);
     if (err)
@@ -22,7 +23,7 @@ int main(void)
     printf("Insert 50 at 1\n");
     PrintList(&List);
 
-    ListDump(&List);
+    ListDump(&List, &LogCtx);
 
     getchar();
     err = ListInsertNode(&List, 55, HEAD);
@@ -31,7 +32,7 @@ int main(void)
     printf("Insert 55 at HEAD\n");
     PrintList(&List);
 
-    ListDump(&List);
+    ListDump(&List, &LogCtx);
 
     getchar();
     err = ListInsertNode(&List, 60, HEAD);
@@ -40,7 +41,7 @@ int main(void)
     printf("Insert 60 at HEAD\n");
     PrintList(&List);
 
-    ListDump(&List);
+    ListDump(&List, &LogCtx);
 
     getchar();
     err = ListInsertNode(&List, 70, HEAD);
@@ -49,7 +50,7 @@ int main(void)
     printf("Insert 70 at HEAD\n");
     PrintList(&List);
 
-    ListDump(&List);
+    ListDump(&List, &LogCtx);
     
     getchar();
     err = ListInsertNode(&List, 80, HEAD);
@@ -58,7 +59,7 @@ int main(void)
     printf("Insert 80 at HEAD\n");
     PrintList(&List);
     
-    //ListDump(&List);
+    ListDump(&List, &LogCtx);
 
     getchar();
     err = ListDeleteNode(&List, 3);
@@ -67,7 +68,7 @@ int main(void)
     printf("Delete 3\n");
     PrintList(&List);
 
-    ListDump(&List);
+    ListDump(&List, &LogCtx);
     
     getchar();
     err = ListDeleteNode(&List, HEAD);
@@ -76,7 +77,7 @@ int main(void)
     printf("Delete HEAD\n");
     PrintList(&List);
 
-    ListDump(&List);
+    ListDump(&List, &LogCtx);
 
     getchar();
     err = ListDeleteNode(&List, TAIL);
@@ -85,7 +86,7 @@ int main(void)
     printf("Delete TAIL\n");
     PrintList(&List);
 
-    ListDump(&List);
+    ListDump(&List, &LogCtx);
 
     getchar();
     err = ListDeleteNode(&List, TAIL);
@@ -94,7 +95,7 @@ int main(void)
     printf("Delete TAIL\n");
     PrintList(&List);
 
-    ListDump(&List);
+    ListDump(&List, &LogCtx);
 
     getchar();
     err = ListDeleteNode(&List, HEAD);
@@ -103,7 +104,7 @@ int main(void)
     printf("Delete HEAD\n");
     PrintList(&List);
 
-    ListDump(&List);
+    ListDump(&List, &LogCtx);
 
     getchar();
     err = ListInsertNode(&List, 4, HEAD);
@@ -112,7 +113,9 @@ int main(void)
     printf("Insert 4 at HEAD\n");
     PrintList(&List);
 
-    ListDump(&List);
+    ListDump(&List, &LogCtx);
+
+    ConstructHtm(&List, &LogCtx);
 
     ListDtor(&List);
 

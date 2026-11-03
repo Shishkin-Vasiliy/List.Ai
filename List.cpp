@@ -180,8 +180,9 @@ int FindNode(List_t *List, int node)
     return Curr;
 }
 
-int ListLogInit(List_t *List)
+int ListLogInit(List_t *List, LogCtx_t *LogCtx)
 {
+    const int MAX_PICTS = 16;
     int DirNotFound = system("[ -d ListLog ]");
 
     if (DirNotFound)
@@ -196,26 +197,29 @@ int ListLogInit(List_t *List)
     {
         system("rm -f ListLog/*");
     }
-    
+
+    LogCtx->pict_index = (char **)calloc(MAX_PICTS, sizeof(char *));
+    if (!LogCtx->pict_index)
+        return EOF;
+
     return 0;
 }
 
-void ListDump(List_t *List)
+void ListDump(List_t *List, LogCtx_t *LogCtx)
 {
-    static int DumpCount = 1;
-
     const int DATE_SIZE = 30;
     const int TIME_SIZE = 30;
     const int PATH_SIZE = 100;
     const int COMMAND_SIZE = 200;
 
     char dot_path[PATH_SIZE] = {};
-    char htm_path[PATH_SIZE] = {};
     char png_path[PATH_SIZE] = {};
     char date[DATE_SIZE] = {};
     char time[TIME_SIZE] = {};
     char command[COMMAND_SIZE] = {};
     
+    int num_picts = LogCtx->num_picts;
+
     snprintf(date, DATE_SIZE, __DATE__);
     for (char *p = date; *p != '\0' && (p = strchr(p, ' ')) != NULL; p++)
         *p = '_';
@@ -224,24 +228,22 @@ void ListDump(List_t *List)
     for (char *p = time; *p != '\0' && (p = strchr(p, ':')) != NULL; p++)
         *p = '_';
 
-    snprintf(dot_path, PATH_SIZE, "ListLog/%s_%s_%d.dot", date, time, DumpCount);
+    snprintf(dot_path, PATH_SIZE, "ListLog/%s_%s_%d.dot", date, time, num_picts);
     FILE *dot_fp = fopen(dot_path, "w");
     if (!dot_fp)
         return;
     DescribeGraph(List, dot_fp);
     fclose(dot_fp);
-    snprintf(command, COMMAND_SIZE, "dot %s -Tpng -o ListLog/%s_%s_%d.png", dot_path, date, time, DumpCount);
+    snprintf(command, COMMAND_SIZE, "dot %s -Tpng -o ListLog/%s_%s_%d.png", dot_path, date, time, num_picts);
     system(command);
 
-    snprintf(htm_path, PATH_SIZE, "ListLog/%s_%s_%d.htm", date, time, DumpCount);
-    snprintf(png_path, PATH_SIZE, "%s_%s_%d.png", date, time, DumpCount);
-    FILE *htm_fp = fopen(htm_path, "w");
-    if (!htm_fp)
-        return;
-    ConstructHtm(List, htm_fp, png_path);
-    fclose(htm_fp);
+    snprintf(png_path, PATH_SIZE, "%s_%s_%d.png", date, time, num_picts);
 
-    DumpCount++;
+    char *temp = strdup(png_path);
+    if (!temp) 
+        return;         // TODO not void return
+    LogCtx->pict_index[LogCtx->num_picts] = temp;
+    LogCtx->num_picts++;
 } 
 
 void DescribeGraph(List_t *List, FILE *fp) 
@@ -315,16 +317,26 @@ void DescribeGraph(List_t *List, FILE *fp)
     fprintf(fp, "}\n");
 }
 
-void ConstructHtm(List_t *List, FILE *fp, const char *png_path)
+void ConstructHtm(List_t *List, LogCtx_t *LogCtx)
 {
+    FILE *fp = fopen("ListLog/Dump.htm", "w");
+    if (!fp)
+        return;
+
     fprintf(fp, "<body style=\"background-color: #283f3f;\">\n");
     fprintf(fp, "<pre style=\"font-family: Consolas, 'Courier New', monospace; color: #ffffff; font-size: 14px;\">\n");
 
     fprintf(fp, "<h3> <font color=white >LIST DUMP</font> </h3>\n");
     fprintf(fp, "<font color=white>List Visualization:</font>\n");
-    fprintf(fp, "<div style=\"margin-top: 100px;\"></div>\n");
-    fprintf(fp, "<img src=%s width=1400px>", png_path);
+
+    for (int i = 0; i < LogCtx->num_picts; i++)
+    {
+        fprintf(fp, "<div style=\"margin-top: 100px;\"></div>\n");
+        fprintf(fp, "<img src=%s width=1400px>", LogCtx->pict_index[i]);
+    }
 
     fprintf(fp, "</pre>\n");
     fprintf(fp, "</body>\n");
+
+    fclose(fp);
 }

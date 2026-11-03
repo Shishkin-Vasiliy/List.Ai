@@ -20,6 +20,11 @@ struct List_t {
     size_t size;
 };
 
+struct LogCtx_t {
+    char **pict_index;
+    int num_picts;
+};
+
 enum ListErr_t {
     LIST_OK,
     LIST_CALLOC_FAIL,
@@ -33,7 +38,7 @@ enum KeyNodes {
     TAIL = 1
 };
 
-int ListLogInit(List_t *List);
+int ListLogInit(List_t *List, LogCtx_t *LogCtx);
 void PrintList(List_t *List);
 ListErr_t ListCtor(List_t *List, size_t capacity);
 int FindFree(List_t *List);
@@ -42,9 +47,9 @@ ListErr_t ListInsertNode(List_t *List, ListElem_t val, int node);
 ListErr_t ListDeleteNode(List_t *List, int node);
 ListErr_t ListVerify(List_t *List);
 void ListDtor(List_t *List);
-void ListDump(List_t *List);
+void ListDump(List_t *List, LogCtx_t *LogCtx);
 void DescribeGraph(List_t *List, FILE *fp);
-void ConstructHtm(List_t *List, FILE *fp, const char *png_path);
+void ConstructHtm(List_t *List, LogCtx_t *LogCtx);
 
 #define LIST_VERIFY(err, List)  \
 do                              \
