@@ -34,7 +34,7 @@ node5 -> node4 [weight=1];
 node [shape=circle; style=filled; fontcolor="#FFFFFF"; width=0.6; fixedsize=true];
 tail [label="tail", fillcolor="#FF6347A0", color="#FFFFFF"];
 head [label="head", fillcolor="#A52A2AA0", color="#FFFFFF"];
-tail:s -> node1:n;
-head:s -> node5:n;
+tail:s -> node1:nw;
+head:s -> node5:ne;
 node [shape=invtrapezium; style=filled; fontcolor="#FFFFFF"; width=1.0; fixedsize=true];
 }

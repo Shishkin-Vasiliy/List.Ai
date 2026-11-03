@@ -6,15 +6,15 @@ nodesep=0.8;
 ranksep=0.9;
 { rank=same;
 node0 [shape=Mrecord; style=filled; fillcolor="#6A184DA0"; color="#A5497EA0"; fontcolor="#FFFFFF";
-       label="  { index = 0    | value = D01B0EB | {prev = 0 | next = 0} }"];
-node1 [shape=Mrecord; style=filled; fillcolor="#000040A0"; color="#FFFFFF"; fontcolor="#FFFFFF";
-       label="  { index = 1   | value = BADA55 | {prev = 0 | next = 2} }"];
-node2 [shape=Mrecord; style=filled; fillcolor="#000040A0"; color="#FFFFFF"; fontcolor="#FFFFFF";
-       label="  { index = 2   | value = BADA55 | {prev = 0 | next = 4} }"];
+       label="  { index = 0    | value = D01B0EB | {prev = 4 | next = 1} }"];
+node1 [shape=Mrecord; style=filled; fillcolor="#000090A0"; color="#FFFFFF"; fontcolor="#FFFFFF";
+       label="  { index = 1   | value = 50 | {prev = 0 | next = 2} }"];
+node2 [shape=Mrecord; style=filled; fillcolor="#000090A0"; color="#FFFFFF"; fontcolor="#FFFFFF";
+       label="  { index = 2   | value = 55 | {prev = 1 | next = 4} }"];
 node3 [shape=Mrecord; style=filled; fillcolor="#000040A0"; color="#FFFFFF"; fontcolor="#FFFFFF";
        label="  { index = 3   | value = BADA55 | {prev = 2 | next = 4} }"];
-node4 [shape=Mrecord; style=filled; fillcolor="#000040A0"; color="#FFFFFF"; fontcolor="#FFFFFF";
-       label="  { index = 4   | value = BADA55 | {prev = 0 | next = 0} }"];
+node4 [shape=Mrecord; style=filled; fillcolor="#000090A0"; color="#FFFFFF"; fontcolor="#FFFFFF";
+       label="  { index = 4   | value = 70 | {prev = 2 | next = 0} }"];
 node5 [shape=Mrecord; style=filled; fillcolor="#000040A0"; color="#FFFFFF"; fontcolor="#FFFFFF";
        label="  { index = 5   | value = BADA55 | {prev = 4 | next = 0} }"];
 node6 [shape=Mrecord; style=filled; fillcolor="#000040A0"; color="#FFFFFF"; fontcolor="#FFFFFF";
@@ -23,20 +23,18 @@ node7 [shape=Mrecord; style=filled; fillcolor="#000040A0"; color="#FFFFFF"; font
        label="  { index = 7   | value = D01B0EB | {prev = -1 | next = -1} }"];
 }
 edge [color="#FFFFFF"];
+node1 -> node2 [weight=100];
+node2 -> node1 [weight=1];
+node2 -> node4 [weight=100];
+node4 -> node2 [weight=1];
 node [shape=circle; style=filled; fontcolor="#FFFFFF"; width=0.6; fixedsize=true];
 tail [label="tail", fillcolor="#FF6347A0", color="#FFFFFF"];
 head [label="head", fillcolor="#A52A2AA0", color="#FFFFFF"];
-tail:s -> node0:n;
-head:s -> node0:n;
+tail:s -> node1:nw;
+head:s -> node4:ne;
 node [shape=invtrapezium; style=filled; fontcolor="#FFFFFF"; width=1.0; fixedsize=true];
-deleted1 [label="deleted", fillcolor="#000000", color="#FFFFFF"];
-deleted1:s -> node1:n
-deleted2 [label="deleted", fillcolor="#000000", color="#FFFFFF"];
-deleted2:s -> node2:n
 deleted3 [label="deleted", fillcolor="#000000", color="#FFFFFF"];
 deleted3:s -> node3:n
-deleted4 [label="deleted", fillcolor="#000000", color="#FFFFFF"];
-deleted4:s -> node4:n
 deleted5 [label="deleted", fillcolor="#000000", color="#FFFFFF"];
 deleted5:s -> node5:n
 }

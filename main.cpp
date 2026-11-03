@@ -13,7 +13,6 @@ int main(void)
     int LogErr = ListLogInit(&List, &LogCtx);
     if (!LogErr)
         printf("Logging started\n");
-
     ListDump(&List, &LogCtx);
 
     getchar();
@@ -22,7 +21,6 @@ int main(void)
         printf("err = %d\n", err);
     printf("Insert 50 at 1\n");
     PrintList(&List);
-
     ListDump(&List, &LogCtx);
 
     getchar();
@@ -31,7 +29,6 @@ int main(void)
         printf("err = %d\n", err);
     printf("Insert 55 at HEAD\n");
     PrintList(&List);
-
     ListDump(&List, &LogCtx);
 
     getchar();
@@ -40,7 +37,6 @@ int main(void)
         printf("err = %d\n", err);
     printf("Insert 60 at HEAD\n");
     PrintList(&List);
-
     ListDump(&List, &LogCtx);
 
     getchar();
@@ -49,7 +45,6 @@ int main(void)
         printf("err = %d\n", err);
     printf("Insert 70 at HEAD\n");
     PrintList(&List);
-
     ListDump(&List, &LogCtx);
     
     getchar();
@@ -58,7 +53,7 @@ int main(void)
         printf("err = %d\n", err);
     printf("Insert 80 at HEAD\n");
     PrintList(&List);
-    
+
     ListDump(&List, &LogCtx);
 
     getchar();
@@ -67,7 +62,6 @@ int main(void)
         printf("err = %d\n", err);
     printf("Delete 3\n");
     PrintList(&List);
-
     ListDump(&List, &LogCtx);
     
     getchar();
@@ -76,7 +70,6 @@ int main(void)
         printf("err = %d\n", err);
     printf("Delete HEAD\n");
     PrintList(&List);
-
     ListDump(&List, &LogCtx);
 
     getchar();
@@ -85,7 +78,6 @@ int main(void)
         printf("err = %d\n", err);
     printf("Delete TAIL\n");
     PrintList(&List);
-
     ListDump(&List, &LogCtx);
 
     getchar();
@@ -94,7 +86,6 @@ int main(void)
         printf("err = %d\n", err);
     printf("Delete TAIL\n");
     PrintList(&List);
-
     ListDump(&List, &LogCtx);
 
     getchar();
@@ -112,11 +103,11 @@ int main(void)
         printf("err = %d\n", err);
     printf("Insert 4 at HEAD\n");
     PrintList(&List);
-
     ListDump(&List, &LogCtx);
 
     ConstructHtm(&List, &LogCtx);
 
+    ListLogDeinit(&LogCtx);
     ListDtor(&List);
 
     return 0;

@@ -205,7 +205,7 @@ int ListLogInit(List_t *List, LogCtx_t *LogCtx)
     return 0;
 }
 
-void ListDump(List_t *List, LogCtx_t *LogCtx)
+int ListDump(List_t *List, LogCtx_t *LogCtx)
 {
     const int DATE_SIZE = 30;
     const int TIME_SIZE = 30;
@@ -229,11 +229,14 @@ void ListDump(List_t *List, LogCtx_t *LogCtx)
         *p = '_';
 
     snprintf(dot_path, PATH_SIZE, "ListLog/%s_%s_%d.dot", date, time, num_picts);
+
     FILE *dot_fp = fopen(dot_path, "w");
     if (!dot_fp)
-        return;
+        return EOF;
+
     DescribeGraph(List, dot_fp);
     fclose(dot_fp);
+
     snprintf(command, COMMAND_SIZE, "dot %s -Tpng -o ListLog/%s_%s_%d.png", dot_path, date, time, num_picts);
     system(command);
 
@@ -241,13 +244,19 @@ void ListDump(List_t *List, LogCtx_t *LogCtx)
 
     char *temp = strdup(png_path);
     if (!temp) 
-        return;         // TODO not void return
+        return EOF;
+
     LogCtx->pict_index[LogCtx->num_picts] = temp;
     LogCtx->num_picts++;
+
+    return 0;
 } 
 
-void DescribeGraph(List_t *List, FILE *fp) 
+int DescribeGraph(List_t *List, FILE *fp) 
 {
+    if (!fp)
+        return EOF;
+
     fprintf(fp, "digraph {\n");
     fprintf(fp, "bgcolor=\"#283f3f\";\n");
     fprintf(fp, "rankdir=TB;\n");      
@@ -295,13 +304,13 @@ void DescribeGraph(List_t *List, FILE *fp)
 
     if (List->size)
     {
-        fprintf(fp, "tail:s -> node%d:n;\n", List->dummy->next);
-        fprintf(fp, "head:s -> node%d:n;\n", List->dummy->prev);
+        fprintf(fp, "tail:s -> node%d:nw;\n", List->dummy->next);
+        fprintf(fp, "head:s -> node%d:ne;\n", List->dummy->prev);
     }
     else 
     {
-        fprintf(fp, "tail:s -> node0:n;\n");
-        fprintf(fp, "head:s -> node0:n;\n");
+        fprintf(fp, "tail:s -> node0:nw;\n");
+        fprintf(fp, "head:s -> node0:ne;\n");
     }
 
     fprintf(fp, "node [shape=invtrapezium; style=filled; fontcolor=\"#FFFFFF\"; width=1.0; fixedsize=true];\n");
@@ -315,13 +324,15 @@ void DescribeGraph(List_t *List, FILE *fp)
     }
 
     fprintf(fp, "}\n");
+
+    return 0;
 }
 
-void ConstructHtm(List_t *List, LogCtx_t *LogCtx)
+int ConstructHtm(List_t *List, LogCtx_t *LogCtx)
 {
     FILE *fp = fopen("ListLog/Dump.htm", "w");
     if (!fp)
-        return;
+        return EOF;
 
     fprintf(fp, "<body style=\"background-color: #283f3f;\">\n");
     fprintf(fp, "<pre style=\"font-family: Consolas, 'Courier New', monospace; color: #ffffff; font-size: 14px;\">\n");
@@ -332,11 +343,24 @@ void ConstructHtm(List_t *List, LogCtx_t *LogCtx)
     for (int i = 0; i < LogCtx->num_picts; i++)
     {
         fprintf(fp, "<div style=\"margin-top: 100px;\"></div>\n");
-        fprintf(fp, "<img src=%s width=1400px>", LogCtx->pict_index[i]);
+        fprintf(fp, "<img src=\"%s\" width=1400 style=\"margin-left: 40px;\">\n", LogCtx->pict_index[i]);
     }
 
     fprintf(fp, "</pre>\n");
     fprintf(fp, "</body>\n");
 
     fclose(fp);
+
+    return 0;
+}
+
+void ListLogDeinit(LogCtx_t *LogCtx)
+{
+    for (int i = 0; i < LogCtx->num_picts; i++)
+    {
+        free(LogCtx->pict_index[i]);
+        LogCtx->pict_index[i] = POIZON_CHAR_PTR;
+    }
+
+    free(LogCtx->pict_index);
 }

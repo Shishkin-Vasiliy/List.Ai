@@ -5,6 +5,9 @@
 #define POIZON_DATA_PTR ((Node_t *)666)
 #define DELETED_VAL 0x00BADA55
 
+#define POIZON_CHAR_PTR ((char *)13)
+#define POIZON_INDEX_PTR ((char **)777)
+
 typedef int ListElem_t;
 
 struct Node_t {
@@ -47,9 +50,10 @@ ListErr_t ListInsertNode(List_t *List, ListElem_t val, int node);
 ListErr_t ListDeleteNode(List_t *List, int node);
 ListErr_t ListVerify(List_t *List);
 void ListDtor(List_t *List);
-void ListDump(List_t *List, LogCtx_t *LogCtx);
-void DescribeGraph(List_t *List, FILE *fp);
-void ConstructHtm(List_t *List, LogCtx_t *LogCtx);
+int ListDump(List_t *List, LogCtx_t *LogCtx);
+int DescribeGraph(List_t *List, FILE *fp);
+int ConstructHtm(List_t *List, LogCtx_t *LogCtx);
+void ListLogDeinit(LogCtx_t *LogCtx);
 
 #define LIST_VERIFY(err, List)  \
 do                              \
