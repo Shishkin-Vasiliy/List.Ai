@@ -3,9 +3,12 @@
 
 #define POIZON_VAL 0x0D01B0EB
 #define POIZON_DATA_PTR ((Node_t *)666)
+#define DELETED_VAL 0x00BADA55
+
+typedef int ListElem_t;
 
 struct Node_t {
-    int val;
+    ListElem_t val;
     int next;
     int prev;
 };
@@ -14,6 +17,7 @@ struct List_t {
     Node_t *data;
     Node_t *dummy;
     size_t capacity;
+    size_t size;
 };
 
 enum ListErr_t {
@@ -34,7 +38,7 @@ void PrintList(List_t *List);
 ListErr_t ListCtor(List_t *List, size_t capacity);
 int FindFree(List_t *List);
 int FindNode(List_t *List, int node);
-ListErr_t ListInsertNode(List_t *List, int val, int node);
+ListErr_t ListInsertNode(List_t *List, ListElem_t val, int node);
 ListErr_t ListDeleteNode(List_t *List, int node);
 ListErr_t ListVerify(List_t *List);
 void ListDtor(List_t *List);

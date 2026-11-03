@@ -13,6 +13,7 @@ ListErr_t ListCtor(List_t *List, size_t capacity)
         return LIST_CALLOC_FAIL;
 
     List->capacity = capacity;
+    List->size = 0;
     List->dummy = List->data;
     List->dummy->val = POIZON_VAL;
     List->dummy->next = 0;
@@ -20,6 +21,7 @@ ListErr_t ListCtor(List_t *List, size_t capacity)
 
     for (size_t i = 1; i < List->capacity; i++)
     {
+        List->data[i].val = POIZON_VAL;
         List->data[i].next = -1;
         List->data[i].prev = -1;
     }
@@ -50,7 +52,7 @@ int FindFree(List_t *List)
     return -1;
 }
 
-ListErr_t ListInsertNode(List_t *List, int val, int node)
+ListErr_t ListInsertNode(List_t *List, ListElem_t val, int node)
 { 
     int InsertPos = FindFree(List);
     ListErr_t err = LIST_OK;
@@ -85,6 +87,8 @@ ListErr_t ListInsertNode(List_t *List, int val, int node)
         List -> dummy -> prev = InsertPos;
     else if (node == TAIL)
         List -> dummy -> next = InsertPos;
+
+    List->size++;
     
     LIST_VERIFY(err, List);
     return LIST_OK; 
@@ -121,9 +125,9 @@ ListErr_t ListDeleteNode(List_t *List, int node)
     int Next = List->data[Curr].next;
     List->data[Prev].next = Next;
     List->data[Next].prev = Prev;
-    List->data[Curr].val = POIZON_VAL;
-    List->data[Curr].next = -1;
-    List->data[Curr].prev = -1;
+    List->data[Curr].val = DELETED_VAL;
+
+    List->size--;
 
     LIST_VERIFY(err, List);
     return LIST_OK;
@@ -198,6 +202,8 @@ int ListLogInit(List_t *List)
 
 void ListDump(List_t *List)
 {
+    static int DumpCount = 1;
+
     const int DATE_SIZE = 30;
     const int TIME_SIZE = 30;
     const int PATH_SIZE = 100;
@@ -218,22 +224,24 @@ void ListDump(List_t *List)
     for (char *p = time; *p != '\0' && (p = strchr(p, ':')) != NULL; p++)
         *p = '_';
 
-    snprintf(dot_path, PATH_SIZE, "ListLog/%s_%s.dot", date, time);
+    snprintf(dot_path, PATH_SIZE, "ListLog/%s_%s_%d.dot", date, time, DumpCount);
     FILE *dot_fp = fopen(dot_path, "w");
     if (!dot_fp)
         return;
     DescribeGraph(List, dot_fp);
     fclose(dot_fp);
-    snprintf(command, COMMAND_SIZE, "dot %s -Tpng -o ListLog/%s_%s.png", dot_path, date, time);
+    snprintf(command, COMMAND_SIZE, "dot %s -Tpng -o ListLog/%s_%s_%d.png", dot_path, date, time, DumpCount);
     system(command);
 
-    snprintf(htm_path, PATH_SIZE, "ListLog/%s_%s.htm", date, time);
-    snprintf(png_path, PATH_SIZE, "%s_%s.png", date, time);
+    snprintf(htm_path, PATH_SIZE, "ListLog/%s_%s_%d.htm", date, time, DumpCount);
+    snprintf(png_path, PATH_SIZE, "%s_%s_%d.png", date, time, DumpCount);
     FILE *htm_fp = fopen(htm_path, "w");
     if (!htm_fp)
         return;
     ConstructHtm(List, htm_fp, png_path);
     fclose(htm_fp);
+
+    DumpCount++;
 } 
 
 void DescribeGraph(List_t *List, FILE *fp) 
@@ -242,69 +250,81 @@ void DescribeGraph(List_t *List, FILE *fp)
     fprintf(fp, "bgcolor=\"#283f3f\";\n");
     fprintf(fp, "rankdir=TB;\n");      
     fprintf(fp, "splines=ortho;\n");
-    fprintf(fp, "nodesep=0.5;\n");
-    fprintf(fp, "ranksep=0.8;\n");
+    fprintf(fp, "nodesep=0.8;\n");
+    fprintf(fp, "ranksep=0.9;\n");
 
-    int curr = List->dummy->next;
-    int count = 0;
-    
     fprintf(fp, "{ rank=same;\n"); 
     
-    fprintf(fp, "node%d [shape=Mrecord; style=filled; fillcolor=\"#6A184DA0\"; color=\"#A5497EA0\"; fontcolor=\"#FFFFFF\";\n", count);
+    fprintf(fp, "node0 [shape=Mrecord; style=filled; fillcolor=\"#6A184DA0\"; color=\"#A5497EA0\"; fontcolor=\"#FFFFFF\";\n");
     fprintf(fp, "       label=\"  { index = 0    | value = %X | {prev = %d | next = %d} }\"];\n", List->dummy->val, List->dummy->prev, List->dummy->next);
 
-    if (List->dummy->prev != List->dummy->next && List->dummy->prev != 0)
-        count++;
-
-    if (count)
+    for (int i = 1; i < List->capacity; i++)
     {
-        for (; curr != List->dummy->prev; curr = List->data[curr].next, count++)
+        if ((List->data[i].val == DELETED_VAL) || (List->data[i].val == POIZON_VAL))
         {
-            if (curr == List->dummy->next)
-            {
-                fprintf(fp, "node%d [shape=Mrecord; style=filled; fillcolor=\"#BA55D3A0\"; color=\"#FFFFFF\"; fontcolor=\"#FFFFFF\";\n", count);
-                fprintf(fp, "       label=\"  { index = %d   | value = %d | {prev = %d | next = %d} }\"];\n", curr, List->data[List->dummy->next].val, List->data[List->dummy->next].prev, List->data[List->dummy->next].next);
-            }
-            else 
-            {
-                fprintf(fp, "node%d [shape=Mrecord; style=filled; fillcolor=\"#006000A0\"; color=\"#FFFFFF\"; fontcolor=\"#FFFFFF\";\n", count);
-                fprintf(fp, "       label=\"  { index = %d    | value = %d | {prev = %d | next = %d} }\"];\n", curr, List->data[curr].val, List->data[curr].prev, List->data[curr].next);
-            }
+            fprintf(fp, "node%d [shape=Mrecord; style=filled; fillcolor=\"#000040A0\"; color=\"#FFFFFF\"; fontcolor=\"#FFFFFF\";\n", i);
+            fprintf(fp, "       label=\"  { index = %d   | value = %X | {prev = %d | next = %d} }\"];\n", i, List->data[i].val, List->data[i].prev, List->data[i].next);
         }
-
-        fprintf(fp, "node%d [shape=Mrecord; style=filled; fillcolor=\"#000080A0\"; color=\"#FFFFFF\"; fontcolor=\"#FFFFFF\";\n", count);
-        fprintf(fp, "       label=\"  { index = %d    | value = %d | {prev = %d | next = %d} }\"];\n", curr, List->data[List->dummy->prev].val, List->data[List->dummy->prev].prev, List->data[List->dummy->prev].next);
+        else 
+        {
+            fprintf(fp, "node%d [shape=Mrecord; style=filled; fillcolor=\"#000090A0\"; color=\"#FFFFFF\"; fontcolor=\"#FFFFFF\";\n", i);
+            fprintf(fp, "       label=\"  { index = %d   | value = %d | {prev = %d | next = %d} }\"];\n", i, List->data[i].val, List->data[i].prev, List->data[i].next);
+        }
     }
     
     fprintf(fp, "}\n");
 
     fprintf(fp, "edge [color=\"#FFFFFF\"];\n");
-    for (int i = 0; i < count; i++) 
+
+    for (int count = 0, curr = 0; count < List->size; count++, curr = List->data[curr].next) 
     {
-        fprintf(fp, "node%d -> node%d [weight=100];\n", i, i + 1); 
-        fprintf(fp, "node%d -> node%d [weight=1];\n", i + 1, i);
+        int next = List->data[curr].next;
+        if (List->data[curr].val != DELETED_VAL && List->data[next].val != DELETED_VAL
+        &&  List->data[curr].val != POIZON_VAL && List->data[next].val != POIZON_VAL)
+        {
+            fprintf(fp, "node%d -> node%d [weight=100];\n", curr, next); 
+            fprintf(fp, "node%d -> node%d [weight=1];\n", next, curr);
+        }
     }
-    fprintf(fp, "node%d -> node0 [weight=1];\n", count);
-    fprintf(fp, "node0 -> node%d [weight=1];\n", count);
 
-    fprintf(fp, "node [shape=circle; style=filled; fontcolor=\"#FFFFFF\"; width=0.9; fixedsize=true];\n");
-    
-    fprintf(fp, "head [label=\"head\", fillcolor=\"#000080A0\", color=\"#FFFFFF\"];\n");
-    fprintf(fp, "tail [label=\"tail\", fillcolor=\"#BA55D3A0\", color=\"#FFFFFF\"];\n");
+    fprintf(fp, "node [shape=circle; style=filled; fontcolor=\"#FFFFFF\"; width=0.6; fixedsize=true];\n");
+    fprintf(fp, "tail [label=\"tail\", fillcolor=\"#FF6347A0\", color=\"#FFFFFF\"];\n");
+    fprintf(fp, "head [label=\"head\", fillcolor=\"#A52A2AA0\", color=\"#FFFFFF\"];\n");
 
-    fprintf(fp, "tail:s -> node1:n;\n");
+    if (List->size)
+    {
+        fprintf(fp, "tail:s -> node%d:n;\n", List->dummy->next);
+        fprintf(fp, "head:s -> node%d:n;\n", List->dummy->prev);
+    }
+    else 
+    {
+        fprintf(fp, "tail:s -> node0:n;\n");
+        fprintf(fp, "head:s -> node0:n;\n");
+    }
 
-    fprintf(fp, "head:s -> node%d:n;\n", count);
+    fprintf(fp, "node [shape=invtrapezium; style=filled; fontcolor=\"#FFFFFF\"; width=1.0; fixedsize=true];\n");
+    for (int i = 0; i < List->capacity; i++)
+    {
+        if (List->data[i].val == DELETED_VAL)
+        {
+            fprintf(fp, "deleted%d [label=\"deleted\", fillcolor=\"#000000\", color=\"#FFFFFF\"];\n", i);
+            fprintf(fp, "deleted%d:s -> node%d:n\n", i, i);
+        }
+    }
 
     fprintf(fp, "}\n");
 }
 
 void ConstructHtm(List_t *List, FILE *fp, const char *png_path)
 {
-    fprintf(fp, "<pre>\n");
     fprintf(fp, "<body style=\"background-color: #283f3f;\">\n");
-    fprintf(fp, "<h3> <font color=white>LIST DUMP</font> </h3>\n");
+    fprintf(fp, "<pre style=\"font-family: Consolas, 'Courier New', monospace; color: #ffffff; font-size: 14px;\">\n");
+
+    fprintf(fp, "<h3> <font color=white >LIST DUMP</font> </h3>\n");
     fprintf(fp, "<font color=white>List Visualization:</font>\n");
-    fprintf(fp, "<div style=\"margin-top: 50px;\"></div>\n");
-    fprintf(fp, "<img src=%s width=300px>", png_path);
+    fprintf(fp, "<div style=\"margin-top: 100px;\"></div>\n");
+    fprintf(fp, "<img src=%s width=1400px>", png_path);
+
+    fprintf(fp, "</pre>\n");
+    fprintf(fp, "</body>\n");
 }
