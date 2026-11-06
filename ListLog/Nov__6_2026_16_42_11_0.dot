@@ -1,0 +1,38 @@
+digraph {
+bgcolor="#283f3f";
+rankdir=TB;
+splines=ortho;
+nodesep=0.8;
+ranksep=0.9;
+{ rank=same;
+node0 [shape=Mrecord; style=filled; fillcolor="#6A184DA0"; color="#A5497EA0"; fontcolor="#FFFFFF";
+       label="  { index = 0    | value = D01B0EB | {prev = 0 | next = 0} }"];
+node1 [shape=Mrecord; style=filled; fillcolor="#004000A0"; color="#FFFFFF"; fontcolor="#FFFFFF";
+       label="  { index = 1   | value = D01B0EB | {prev = -1 | next = 2} }"];
+node2 [shape=Mrecord; style=filled; fillcolor="#004000A0"; color="#FFFFFF"; fontcolor="#FFFFFF";
+       label="  { index = 2   | value = D01B0EB | {prev = -1 | next = 3} }"];
+node3 [shape=Mrecord; style=filled; fillcolor="#004000A0"; color="#FFFFFF"; fontcolor="#FFFFFF";
+       label="  { index = 3   | value = D01B0EB | {prev = -1 | next = 4} }"];
+node4 [shape=Mrecord; style=filled; fillcolor="#004000A0"; color="#FFFFFF"; fontcolor="#FFFFFF";
+       label="  { index = 4   | value = D01B0EB | {prev = -1 | next = 5} }"];
+node5 [shape=Mrecord; style=filled; fillcolor="#004000A0"; color="#FFFFFF"; fontcolor="#FFFFFF";
+       label="  { index = 5   | value = D01B0EB | {prev = -1 | next = 6} }"];
+node6 [shape=Mrecord; style=filled; fillcolor="#004000A0"; color="#FFFFFF"; fontcolor="#FFFFFF";
+       label="  { index = 6   | value = D01B0EB | {prev = -1 | next = -1} }"];
+}
+edge [color="#FFFFFF"];
+node1 -> node2 [weight=100];
+node2 -> node3 [weight=100];
+node3 -> node4 [weight=100];
+node4 -> node5 [weight=100];
+node5 -> node6 [weight=100];
+node [shape=circle; style=filled; fontcolor="#FFFFFF"; width=0.8; fixedsize=true];
+tail [label="tail", fillcolor="#FF6347A0", color="#FFFFFF"];
+head [label="head", fillcolor="#A52A2AA0", color="#FFFFFF"];
+tail:s -> node0:nw;
+head:s -> node0:ne;
+node [shape=invtrapezium; style=filled; fontcolor="#FFFFFF"; width=1.0; fixedsize=true];
+node [shape=circle; style=filled; fontcolor="#FFFFFF"; width=0.8; fixedsize=true];
+free [label="free", fillcolor="#2E8B57", color="#FFFFFF"];
+free:s -> node1:n;
+}

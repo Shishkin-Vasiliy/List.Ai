@@ -21,6 +21,8 @@ struct List_t {
     Node_t *dummy;
     size_t capacity;
     size_t size;
+    int free_pos;
+    int free_size;
 };
 
 struct LogCtx_t {

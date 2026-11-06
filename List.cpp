@@ -8,12 +8,22 @@ ListErr_t ListCtor(List_t *List, size_t capacity)
 {
     ListErr_t err = LIST_OK;
 
+    const size_t MIN_CAPACITY = 4;
+    const size_t MAX_CAPACITY = 16;
+
+    if (capacity < 0)
+        capacity = MIN_CAPACITY;
+    if (capacity > MAX_CAPACITY)
+        capacity = MAX_CAPACITY;
+
     List->data = (Node_t *)calloc(capacity, sizeof(Node_t));
     if (!(List->data))
         return LIST_CALLOC_FAIL;
 
-    List->capacity = capacity;
+    List->capacity = capacity - 1;
     List->size = 0;
+    List->free_pos = 1;
+    List->free_size = capacity - 1;
     List->dummy = List->data;
     List->dummy->val = POIZON_VAL;
     List->dummy->next = 0;
@@ -22,7 +32,10 @@ ListErr_t ListCtor(List_t *List, size_t capacity)
     for (size_t i = 1; i < List->capacity; i++)
     {
         List->data[i].val = POIZON_VAL;
-        List->data[i].next = -1;
+        if (i == List->capacity - 1)
+            List->data[i].next = -1;
+        else
+            List->data[i].next = i + 1;
         List->data[i].prev = -1;
     }
 
@@ -54,13 +67,17 @@ int FindFree(List_t *List)
 
 ListErr_t ListInsertNode(List_t *List, ListElem_t val, int node)
 { 
-    int InsertPos = FindFree(List);
+    int InsertPos = List->free_pos;
     ListErr_t err = LIST_OK;
 
     if (InsertPos == -1)
         return LIST_OVERFLOW;
 
     LIST_VERIFY(err, List);
+
+    List->free_pos = List->data[List->free_pos].next;
+    List->free_size--;
+
     int Curr = List->dummy->next;
 
     if (node == (int)HEAD)
@@ -271,10 +288,15 @@ int DescribeGraph(List_t *List, FILE *fp)
 
     for (int i = 1; i < List->capacity; i++)
     {
-        if ((List->data[i].val == DELETED_VAL) || (List->data[i].val == POIZON_VAL))
+        if (List->data[i].val == DELETED_VAL)
         {
             fprintf(fp, "node%d [shape=Mrecord; style=filled; fillcolor=\"#000040A0\"; color=\"#FFFFFF\"; fontcolor=\"#FFFFFF\";\n", i);
             fprintf(fp, "       label=\"  { index = %d   | value = %X | {prev = %d | next = %d} }\"];\n", i, List->data[i].val, List->data[i].prev, List->data[i].next);
+        }
+        else if (List->data[i].val == POIZON_VAL)
+        {
+            fprintf(fp, "node%d [shape=Mrecord; style=filled; fillcolor=\"#004000A0\"; color=\"#FFFFFF\"; fontcolor=\"#FFFFFF\";\n", i);
+            fprintf(fp, "       label=\"  { index = %d   | value = %X | {prev = %d | next = %d} }\"];\n", i, List->data[i].val, List->data[i].prev, List->data[i].next);   
         }
         else 
         {
@@ -282,7 +304,7 @@ int DescribeGraph(List_t *List, FILE *fp)
             fprintf(fp, "       label=\"  { index = %d   | value = %d | {prev = %d | next = %d} }\"];\n", i, List->data[i].val, List->data[i].prev, List->data[i].next);
         }
     }
-    
+     
     fprintf(fp, "}\n");
 
     fprintf(fp, "edge [color=\"#FFFFFF\"];\n");
@@ -290,15 +312,21 @@ int DescribeGraph(List_t *List, FILE *fp)
     for (int count = 0, curr = 0; count < List->size; count++, curr = List->data[curr].next) 
     {
         int next = List->data[curr].next;
-        if (List->data[curr].val != DELETED_VAL && List->data[next].val != DELETED_VAL
-        &&  List->data[curr].val != POIZON_VAL && List->data[next].val != POIZON_VAL)
+        if (List->data[curr].val != DELETED_VAL && List->data[next].val != DELETED_VAL)
         {
             fprintf(fp, "node%d -> node%d [weight=100];\n", curr, next); 
             fprintf(fp, "node%d -> node%d [weight=1];\n", next, curr);
         }
     }
 
-    fprintf(fp, "node [shape=circle; style=filled; fontcolor=\"#FFFFFF\"; width=0.6; fixedsize=true];\n");
+    for (int count = 0, curr = List->free_pos; curr < List->capacity - 1 && count < List->free_size; count++, curr = List->data[curr].next)
+    {
+        int next = List->data[curr].next;
+
+        fprintf(fp, "node%d -> node%d [weight=100];\n", curr, next);
+    }
+
+    fprintf(fp, "node [shape=circle; style=filled; fontcolor=\"#FFFFFF\"; width=0.8; fixedsize=true];\n");
     fprintf(fp, "tail [label=\"tail\", fillcolor=\"#FF6347A0\", color=\"#FFFFFF\"];\n");
     fprintf(fp, "head [label=\"head\", fillcolor=\"#A52A2AA0\", color=\"#FFFFFF\"];\n");
 
@@ -319,8 +347,16 @@ int DescribeGraph(List_t *List, FILE *fp)
         if (List->data[i].val == DELETED_VAL)
         {
             fprintf(fp, "deleted%d [label=\"deleted\", fillcolor=\"#000000\", color=\"#FFFFFF\"];\n", i);
-            fprintf(fp, "deleted%d:s -> node%d:n\n", i, i);
+            fprintf(fp, "deleted%d:s -> node%d:n;\n", i, i);
         }
+    }
+
+    printf("free_pos = %d\n", List->free_pos);
+    if (List->free_pos > 0)
+    {
+        fprintf(fp, "node [shape=circle; style=filled; fontcolor=\"#FFFFFF\"; width=0.8; fixedsize=true];\n");
+        fprintf(fp, "free [label=\"free\", fillcolor=\"#2E8B57\", color=\"#FFFFFF\"];\n");
+        fprintf(fp, "free:s -> node%d:n;\n", List->free_pos);
     }
 
     fprintf(fp, "}\n");
